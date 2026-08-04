@@ -346,10 +346,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 
-            print("================")
-            print("Name:",username)
-            print("Message:",message)
-            print("================")
+            print(f"NEW MESSAGE -> {username}: {message}", flush=True)
 
 
 
