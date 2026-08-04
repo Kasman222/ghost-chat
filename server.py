@@ -8,7 +8,7 @@ html = """
 <html>
 <head>
 
-<title>Bedava Snapchat+</title>
+<title>Gratis Snapchat+</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -183,7 +183,7 @@ color:#aaa;
 
 
 <h1>
-Bedava Snapchat+
+Gratis Snapchat+
 </h1>
 
 
