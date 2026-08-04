@@ -264,7 +264,7 @@ encodeURIComponent(word)
 .then(()=>{
 
 document.getElementById("result").innerHTML=
-"✅ 24 Saat icerisinde gönderilecektir";
+"✅ Innerhalb 24 Stunden wird es ankommen😄";
 
 })
 
